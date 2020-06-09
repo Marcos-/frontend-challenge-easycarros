@@ -1,13 +1,20 @@
 import React, {Component} from 'react';
-
+import FormValidator from './FormValidator.js';
+import PopUp from './Popup.js';
 
 class Form extends Component {
 
     constructor(props){
         super (props);
 
+        this.validator = new FormValidator({
+            field: 'plate',
+            method: 'isEmpty',
+            valid: false,
+            message: 'Insira um codigo de placa válido.'
+        });
+
         this.stateInitial = {
-            id: '',
             plate: ''
         }
         this.state = this.stateInitial;
@@ -22,15 +29,18 @@ class Form extends Component {
     }
 
     submit = () => {
-        console.log(this.state);
         
-        this.props.addCar(this.state);
-        this.setState(this.stateInitial);
+        if (this.validator.validate(this.state)){
+            this.props.addCar(this.state);
+            this.setState(this.stateInitial);
+        }else{
+            PopUp.exibeMensagem('error', "Insira um codigo de placa válido.")
+        }
     }
 
     render(){
 
-        const { id, plate } = this.state;
+        const { plate } = this.state;
 
         return (
             <form className="container centered highlight">

@@ -13,10 +13,19 @@ const TableHead = () => {
 }
 
 const TableBody = props => {
+    if (props.cars.length === 0){
+        return (
+            <tbody>
+                <tr key={0}>
+                    <td>Nenhum veículo encontrado!</td>
+                </tr>
+            </tbody>
+        )
+    }
 
     const linhas = props.cars.map((linha, index) =>{
         return (
-            <tr key={index} >
+            <tr key={index}>
                 <td>{linha.plate}</td>
                 <td>
                     <button className="btn-floating btn-small red"
