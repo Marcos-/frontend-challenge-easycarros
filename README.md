@@ -1,3 +1,11 @@
+## Desafio Frontend Easy Carros
+
+Para testar clone esse repositório no seu computador e depois:
+
+### `yarn install`
+### `yarn start`
+
+
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
 ## Available Scripts
