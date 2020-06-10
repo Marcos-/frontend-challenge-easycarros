@@ -2,7 +2,8 @@ import React, {Component, Fragment} from 'react';
 import 'materialize-css/dist/css/materialize.min.css';
 import Tabela from './widgets/Tabela';
 import Form from './widgets/Form.js';
-import AptService from './apiService/apiService';
+import ApiService from './apiService/apiService';
+import PopUp from './widgets/Popup.js';
 
 class Vehicles extends Component {
 
@@ -14,33 +15,48 @@ class Vehicles extends Component {
     }
   }
 
-  removeCar = index => {
-    const {cars} = this.state;
-    this.setState({
-      cars : cars.filter((id, current) => {
-        if (current !== index){
-            AptService.deleteVehicle(this.props.token, cars[current].id)
-                .then(res => {
-                    console.log(res);
-                });
-            
-            return true
-        }else
-            return false
-      })
-    })
+  removeCar = id => {
+    const carsUpdated = this.state.cars.filter((car) => {
+      return car.id !== id;
+    });   
+    ApiService.deleteVehicle(this.props.token, id)
+      .then(res => {
+          if (res.status === 204){           
+            this.setState({cars : carsUpdated});
+            PopUp.exibeMensagem('success', "Veículo removido com sucesso!");
+          }else
+          if (res.status === 401){
+            PopUp.exibeMensagem('error', "Token inválido ou inexistente");
+          }
+          else {
+            PopUp.exibeMensagem('error', "Erro de comunicação com o servidor");
+          }
+        }
+    );    
   }
   
   addCar = car => {
-    this.setState({
-      cars:[...this.state.cars, car]
-    })
-    AptService.postVehicle(this.props.token, JSON.stringify(car))
-        .then(res => console.log(res));
+    ApiService.postVehicle(this.props.token, JSON.stringify(car))
+        .then(res => {
+          
+          if (res.data){
+            this.setState({cars:[...this.state.cars, res.data]})
+            PopUp.exibeMensagem('success', "Veículo adicionado com sucesso!")
+          }else
+          if (res.status === 401){
+            PopUp.exibeMensagem('error', "Token inválido ou inexistente");
+          }else
+          if (res.status === 400){
+            PopUp.exibeMensagem('error', "Placa inválida ou inexistente");
+          }
+          else {
+            PopUp.exibeMensagem('error', "Erro de comunicação com o servidor");
+          }
+        });
   }
 
   componentDidMount(){
-    AptService.getVehicles(this.props.token).then((res) => {
+    ApiService.getVehicles(this.props.token).then((res) => {
       this.setState({cars : [...this.state.cars, ...res.data]})
     });
   }

@@ -26,7 +26,10 @@ const ApiService = {
                 body: vehicle
             })
             .then(res => {
-                return res.json();
+                if (res.ok)
+                    return res.json()
+                else
+                    return res
             });
     },
 
@@ -40,9 +43,7 @@ const ApiService = {
                     'Authorization': `Bearer ${token}`
                 }, 
             })
-            .then(res => {
-                return res;
-            });
+            .then(res => res);
     },
 
     postAuth: (user) => {

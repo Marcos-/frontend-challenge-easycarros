@@ -29,7 +29,7 @@ const TableBody = props => {
                 <td>{linha.plate}</td>
                 <td>
                     <button className="btn-floating btn-small red"
-                        onClick = {() => {props.removeCar(index)}} >
+                        onClick = {() => {props.removeCar(linha.id)}} >
                             <i className="material-icons">remove</i>
                     </button>
                 </td>
