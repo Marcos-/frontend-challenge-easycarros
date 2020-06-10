@@ -9,10 +9,7 @@ class Login extends Component {
   constructor(props){
     super(props);
     this.submit = this.submit.bind(this);
-    this.state = {
-      email: 'frontend-dev@easycarros.com',
-      password: 'Fr0nt3ndR0ck5!'
-    }
+    this.state = {}
   }
   
   validator_email = new FormValidator({
@@ -30,12 +27,26 @@ class Login extends Component {
   });
 
   submit = async () => {
+
+    let validation = this.validator_email.validate(this.state) &&
+                      this.validator_password.validate(this.state);
         
-    if (this.validator_email.validate(this.state)){
+    if (validation){
         ApiService.postAuth(JSON.stringify(this.state))
-                  .then(res => this.props.onTokenChange(res.data.token));
+                  .then(res => {
+                    if (res.data){           
+                      this.props.onTokenChange(res.data.token);
+                      PopUp.exibeMensagem('success', "Login realizado com sucesso!");
+                    }else
+                    if (res.status === 401){
+                      PopUp.exibeMensagem('error', "Credenciais inválidas");
+                    }
+                    else {
+                      PopUp.exibeMensagem('error', "Erro de comunicação com o servidor");
+                    }
+                  });
     }else{
-        PopUp.exibeMensagem('error', "O e-mail ou a senha informados estão incorretos.")
+        PopUp.exibeMensagem('error', "Não é possivel submeter com os campos vazios")
     }
   }
 
@@ -53,7 +64,7 @@ class Login extends Component {
 
     return (
       <Fragment>
-        <div style={{height: 32}}/>
+        <div style={{height: 64}}/>
         
         <div className="container centered highlight">
           <img className="responsive-img logo" src="https://s3.amazonaws.com/sample-login/companies/avatars/000/000/788/original/Logo_EasyCarros_Vertical_blue.png" alt="Easy Carros" />

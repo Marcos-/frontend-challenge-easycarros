@@ -11,7 +11,12 @@ const ApiService = {
                 }, 
                 
             })
-            .then(res => res.json());
+            .then(res => {
+                if (res.ok)
+                    return res.json()
+                else
+                    return res
+            });
     },
 
     postVehicle: (token, vehicle) => {
@@ -53,7 +58,12 @@ const ApiService = {
                 headers: {"content-type": "application/json", 'Access-Control-Allow-Origin':'*'}, 
                 body: user
             })
-            .then(res => res.json());
+            .then(res => {
+                if (res.ok)
+                    return res.json()
+                else
+                    return res
+            });
     }
 }
 export default ApiService;

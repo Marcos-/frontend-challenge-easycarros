@@ -1,9 +1,8 @@
-import React, {Component, Fragment} from 'react';
+import React, {Component} from 'react';
 import 'materialize-css/dist/css/materialize.min.css';
-import Header from './widgets/Header.js';
-import AptService from './apiService/apiService';
 import Login from './Login';
 import Vehicles from './Vehicles.js';
+import { BrowserRouter, Switch, Route, Redirect } from 'react-router-dom';
 
 class App extends Component {
 
@@ -21,16 +20,14 @@ class App extends Component {
 
   render() {
     return (
-      <Fragment>
-        <Header />
-        <div style={{height: 32}}/>
-          {this.state.token === undefined &&
-           <Login onTokenChange={ this.handleTokenChange } />
-          }
-          {this.state.token !== undefined &&
-           <Vehicles token={ this.state.token } />
-          }
-      </Fragment>
+      <BrowserRouter>
+        <Switch>
+          <Route path="/" exact={true} component={() => <Login onTokenChange={ this.handleTokenChange } /> }> 
+            { this.state.token !== undefined ? <Redirect to="/vehicles" /> : <Login onTokenChange={ this.handleTokenChange } /> }
+          </Route>
+          <Route path="/vehicles" component={() => <Vehicles token={this.state.token} />}/>
+        </Switch>
+      </BrowserRouter>
     );
   }
 

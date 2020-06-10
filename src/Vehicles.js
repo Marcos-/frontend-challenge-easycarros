@@ -2,8 +2,10 @@ import React, {Component, Fragment} from 'react';
 import 'materialize-css/dist/css/materialize.min.css';
 import Tabela from './widgets/Tabela';
 import Form from './widgets/Form.js';
+import Header from './widgets/Header.js';
 import ApiService from './apiService/apiService';
 import PopUp from './widgets/Popup.js';
+import M from  'materialize-css/dist/js/materialize.min.js';
 
 class Vehicles extends Component {
 
@@ -32,13 +34,12 @@ class Vehicles extends Component {
             PopUp.exibeMensagem('error', "Erro de comunicação com o servidor");
           }
         }
-    );    
+    ).catch(error => PopUp.exibeMensagem('error', "Erro de comunicação com a api"));    
   }
   
   addCar = car => {
     ApiService.postVehicle(this.props.token, JSON.stringify(car))
         .then(res => {
-          
           if (res.data){
             this.setState({cars:[...this.state.cars, res.data]})
             PopUp.exibeMensagem('success', "Veículo adicionado com sucesso!")
@@ -52,18 +53,29 @@ class Vehicles extends Component {
           else {
             PopUp.exibeMensagem('error', "Erro de comunicação com o servidor");
           }
-        });
+        }).catch(error => PopUp.exibeMensagem('error', "Erro de comunicação com a api"));
   }
 
   componentDidMount(){
+    let sidenav = document.querySelector('#slide-out');
+    M.Sidenav.init(sidenav, {});
     ApiService.getVehicles(this.props.token).then((res) => {
-      this.setState({cars : [...this.state.cars, ...res.data]})
-    });
+      if (res.data){
+        this.setState({cars : [...this.state.cars, ...res.data]})
+        PopUp.exibeMensagem('success', "Dados carregados corretamente")
+      }else
+      if (res.status === 401){
+        PopUp.exibeMensagem('error', "Token inválido ou inexistente");
+      }else {
+        PopUp.exibeMensagem('error', "Erro de comunicação com o servidor");
+      }
+    }).catch(error => PopUp.exibeMensagem('error', "Erro de comunicação com a api"));
   }
 
   render() {
     return (
       <Fragment>
+        <Header />
         <div style={{height: 32}}/>
         <Form addCar={this.addCar} />
         <Tabela cars={this.state.cars} removeCar={this.removeCar}/>
